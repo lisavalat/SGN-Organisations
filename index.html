@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Révision Types d'Organisations - 1ère STMG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .menu-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .menu-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .menu-card p {
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .content-area {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: none;
+        }
+        
+        .content-area.active {
+            display: block;
+        }
+        
+        .quiz-question {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .question-text {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .option.correct {
+            border-color: #28a745;
+            background: #28a745;
+            color: white;
+        }
+        
+        .option.incorrect {
+            border-color: #dc3545;
+            background: #dc3545;
+            color: white;
+        }
+        
+        .flashcard {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .flashcard:hover {
+            transform: scale(1.02);
+        }
+        
+        .flashcard-front, .flashcard-back {
+            display: none;
+        }
+        
+        .flashcard-front.active, .flashcard-back.active {
+            display: block;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .score {
+            text-align: center;
+            font-size: 1.5em;
+            color: #667eea;
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #667eea;
+            transition: width 0.3s ease;
+        }
+        
+        .back-btn {
+            margin-bottom: 20px;
+        }
+        
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .term, .definition {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .term:hover, .definition:hover {
+            border-color: #667eea;
+        }
+        
+        .term.selected, .definition.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .term.matched, .definition.matched {
+            border-color: #28a745;
+            background: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Types d'Organisations</h1>
+            <p>Révision interactive pour la 1ère STMG - Sciences de Gestion et Numérique</p>
+        </div>
+        
+        <div id="main-menu" class="menu">
+            <div class="menu-card" onclick="showSection('quiz')">
+                <h3>🎯 Quiz Interactif</h3>
+                <p>Testez vos connaissances avec 20 questions sur les types d'organisations, leurs buts et finalités</p>
+            </div>
+            
+            <div class="menu-card" onclick="showSection('flashcards')">
+                <h3>📚 Cartes de Révision</h3>
+                <p>Révisez les notions clés avec des cartes mémoire interactives</p>
+            </div>
+            
+
+            
+            <div class="menu-card" onclick="showSection('summary')">
+                <h3>📖 Fiche de Synthèse</h3>
+                <p>Consultez le résumé complet des notions importantes</p>
+            </div>
+        </div>
+        
+        <!-- Section Quiz -->
+        <div id="quiz-section" class="content-area">
+            <button class="btn btn-secondary back-btn" onclick="showMainMenu()">← Retour au menu</button>
+            <h2>Quiz sur les Types d'Organisations</h2>
+            <div class="progress-bar">
+                <div id="quiz-progress" class="progress-fill" style="width: 0%"></div>
+            </div>
+            <div id="quiz-score" class="score">Score: 0/0</div>
+            <div id="quiz-container"></div>
+            <div id="quiz-controls" style="text-align: center; margin-top: 20px;"></div>
+        </div>
+        
+        <!-- Section Cartes de révision -->
+        <div id="flashcards-section" class="content-area">
+            <button class="btn btn-secondary back-btn" onclick="showMainMenu()">← Retour au menu</button>
+            <h2>Cartes de Révision</h2>
+            <div id="flashcard-counter" style="text-align: center; margin-bottom: 20px;"></div>
+            <div id="flashcard-container" class="flashcard"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="flipCard()">Retourner la carte</button>
+                <button class="btn btn-secondary" onclick="previousCard()">← Précédent</button>
+                <button class="btn btn-secondary" onclick="nextCard()">Suivant →</button>
+            </div>
+        </div>
+        
+
+        
+        <!-- Section Synthèse -->
+        <div id="summary-section" class="content-area">
+            <button class="btn btn-secondary back-btn" onclick="showMainMenu()">← Retour au menu</button>
+            <h2>Fiche de Synthèse</h2>
+            <div id="summary-content">
+                <h3>1. Action collective organisée</h3>
+                <p><strong>Définition :</strong> Coordination structurée d'individus qui mettent en commun leurs ressources et compétences pour atteindre des objectifs communs, selon des règles et procédures formalisées.</p>
+                
+                <h3>2. Types d'organisations selon leur but</h3>
+                <ul>
+                    <li><strong>But lucratif :</strong> Recherche de profit (entreprises privées)</li>
+                    <li><strong>But non lucratif :</strong> Service à l'intérêt général ou aux membres (associations, organisations publiques, coopératives)</li>
+                </ul>
+                
+                <h3>3. Finalités des organisations</h3>
+                <ul>
+                    <li><strong>Économique :</strong> Création de richesse, développement d'activités</li>
+                    <li><strong>Sociétale :</strong> Création d'emplois, protection sociale, solidarité</li>
+                    <li><strong>Environnementale :</strong> Protection de l'environnement, développement durable</li>
+                    <li><strong>Technologique :</strong> Innovation, recherche et développement</li>
+                </ul>
+                
+                <h3>4. Structure de propriété et gouvernance</h3>
+                <ul>
+                    <li><strong>Propriété privée :</strong> Actionnaires → Gouvernance capitalistique</li>
+                    <li><strong>Propriété collective :</strong> Associés → Gouvernance démocratique</li>
+                    <li><strong>Propriété publique :</strong> État/citoyens → Gouvernance représentative</li>
+                </ul>
+                
+                <h3>5. Contrôle des dirigeants</h3>
+                <p>Mécanismes de contrôle pour éviter les conflits d'intérêts entre propriétaires et dirigeants :</p>
+                <ul>
+                    <li>Assemblées générales</li>
+                    <li>Conseils d'administration</li>
+                    <li>Rapports et transparence</li>
+                    <li>Révocation possible des dirigeants</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données du quiz
+        const quizData = [
+            {
+                question: "Qu'est-ce qu'une action collective organisée ?",
+                options: [
+                    "Un groupe d'individus qui se réunissent spontanément",
+                    "Une coordination structurée d'individus avec des règles formalisées",
+                    "Une simple rencontre entre personnes",
+                    "Une activité individuelle"
+                ],
+                correct: 1
+            },
+            {
+                question: "Quelle est la principale différence entre une organisation à but lucratif et non lucratif ?",
+                options: [
+                    "Le nombre d'employés",
+                    "La taille de l'organisation",
+                    "L'objectif de profit pour les propriétaires",
+                    "Le secteur d'activité"
+                ],
+                correct: 2
+            },
+            {
+                question: "CAE 29 est un exemple d'organisation :",
+                options: [
+                    "À but lucratif",
+                    "Publique",
+                    "Coopérative",
+                    "Familiale"
+                ],
+                correct: 2
+            },
+            {
+                question: "Dans une coopérative, le pouvoir de décision se base sur :",
+                options: [
+                    "Le nombre d'actions détenues",
+                    "Le principe '1 associé = 1 voix'",
+                    "L'ancienneté dans l'organisation",
+                    "Le montant investi"
+                ],
+                correct: 1
+            },
+            {
+                question: "Quelle finalité poursuit une organisation qui développe des énergies renouvelables ?",
+                options: [
+                    "Économique uniquement",
+                    "Sociétale uniquement",
+                    "Environnementale",
+                    "Technologique uniquement"
+                ],
+                correct: 2
+            },
+            {
+                question: "Qui contrôle les dirigeants dans une entreprise familiale comme Leclerc ?",
+                options: [
+                    "L'État",
+                    "Les salariés",
+                    "Les actionnaires familiaux",
+                    "Les clients"
+                ],
+                correct: 2
+            },
+            {
+                question: "Dans une organisation publique, qui nomme les dirigeants ?",
+                options: [
+                    "Les salariés",
+                    "Les clients",
+                    "L'autorité publique",
+                    "Les syndicats"
+                ],
+                correct: 2
+            },
+            {
+                question: "Quel risque existe-t-il sans contrôle des dirigeants ?",
+                options: [
+                    "Augmentation des profits",
+                    "Conflits d'intérêts",
+                    "Amélioration de la gestion",
+                    "Motivation des salariés"
+                ],
+                correct: 1
+            },
+            {
+                question: "Une association poursuit principalement :",
+                options: [
+                    "Un but lucratif",
+                    "Un but non lucratif",
+                    "La maximisation du profit",
+                    "La rémunération des adhérents"
+                ],
+                correct: 1
+            },
+            {
+                question: "La gouvernance des organisations vise à :",
+                options: [
+                    "Augmenter les profits",
+                    "Réduire les coûts",
+                    "Équilibrer les pouvoirs entre propriétaires et dirigeants",
+                    "Éliminer la concurrence"
+                ],
+                correct: 2
+            },
+            {
+                question: "Quelle est la finalité sociétale d'une organisation ?",
+                options: [
+                    "Maximiser les profits",
+                    "Créer des emplois et assurer la protection sociale",
+                    "Développer de nouvelles technologies",
+                    "Protéger l'environnement"
+                ],
+                correct: 1
+            },
+            {
+                question: "Dans quelle organisation les salariés ont-ils le plus de pouvoir ?",
+                options: [
+                    "Entreprise familiale",
+                    "Organisation publique",
+                    "Coopérative (SCOP)",
+                    "Multinationale"
+                ],
+                correct: 2
+            },
+            {
+                question: "L'Assemblée Générale a pour rôle de :",
+                options: [
+                    "Gérer le quotidien",
+                    "Contrôler et orienter les dirigeants",
+                    "Vendre les produits",
+                    "Recruter les salariés"
+                ],
+                correct: 1
+            },
+            {
+                question: "Qu'est-ce que la structure de propriété ?",
+                options: [
+                    "L'organisation des bureaux",
+                    "Le mode de répartition de la propriété du patrimoine",
+                    "La hiérarchie interne",
+                    "Le système informatique"
+                ],
+                correct: 1
+            },
+            {
+                question: "Une finalité technologique consiste à :",
+                options: [
+                    "Embaucher plus de personnel",
+                    "Réduire les coûts",
+                    "Innover et développer la recherche",
+                    "Augmenter les prix"
+                ],
+                correct: 2
+            },
+            {
+                question: "Le passage de l'action collective à l'organisation implique :",
+                options: [
+                    "Une diminution des objectifs",
+                    "Une formalisation juridique et des règles",
+                    "Une réduction du nombre de participants",
+                    "L'abandon des objectifs communs"
+                ],
+                correct: 1
+            },
+            {
+                question: "Dans une entreprise cotée en bourse, qui détient le pouvoir ?",
+                options: [
+                    "Les dirigeants",
+                    "Les salariés",
+                    "Les actionnaires",
+                    "L'État"
+                ],
+                correct: 2
+            },
+            {
+                question: "Quel exemple illustre une finalité environnementale ?",
+                options: [
+                    "Augmenter les dividendes",
+                    "Recruter plus de personnel",
+                    "Réduire les émissions de CO2",
+                    "Développer de nouveaux marchés"
+                ],
+                correct: 2
+            },
+            {
+                question: "La transparence dans une organisation permet de :",
+                options: [
+                    "Cacher les informations importantes",
+                    "Contrôler l'action des dirigeants",
+                    "Augmenter les profits",
+                    "Réduire les coûts"
+                ],
+                correct: 1
+            },
+            {
+                question: "Quel est l'objectif principal d'une organisation à but non lucratif ?",
+                options: [
+                    "Enrichir les propriétaires",
+                    "Servir l'intérêt général ou des membres",
+                    "Minimiser les coûts",
+                    "Éliminer la concurrence"
+                ],
+                correct: 1
+            }
+        ];
+
+        // Données des cartes de révision
+        const flashcardsData = [
+            {
+                front: "Action collective organisée",
+                back: "Coordination structurée d'individus qui mettent en commun leurs ressources et compétences pour atteindre des objectifs communs, selon des règles et procédures formalisées."
+            },
+            {
+                front: "Organisation",
+                back: "Structure sociale formalisée qui coordonne l'action collective vers des buts définis, avec des règles, des rôles et des moyens spécifiques."
+            },
+            {
+                front: "But lucratif",
+                back: "Objectif de génération de profits pour les propriétaires ou actionnaires de l'organisation."
+            },
+            {
+                front: "But non lucratif",
+                back: "Objectif de service à l'intérêt général ou aux membres, sans recherche de profit."
+            },
+            {
+                front: "Finalité économique",
+                back: "Création de richesse, développement d'activités économiques, viabilité financière."
+            },
+            {
+                front: "Finalité sociétale",
+                back: "Création d'emplois, protection sociale, développement humain, solidarité."
+            },
+            {
+                front: "Finalité environnementale",
+                back: "Protection de l'environnement, développement durable, réduction de l'impact écologique."
+            },
+            {
+                front: "Finalité technologique",
+                back: "Innovation, recherche et développement, progrès technologique."
+            },
+            {
+                front: "Structure de propriété",
+                back: "Mode de répartition de la propriété du patrimoine d'une organisation entre différents types de propriétaires."
+            },
+            {
+                front: "Gouvernance",
+                back: "Ensemble des règles qui régissent le contrôle des dirigeants et la gestion des organisations, visant à garantir l'équilibre des forces."
+            },
+            {
+                front: "Propriété collective",
+                back: "Mode de propriété où l'organisation appartient à ses membres (associés, coopérateurs) avec une gouvernance démocratique."
+            },
+            {
+                front: "Contrôle des dirigeants",
+                back: "Mécanismes permettant aux propriétaires de vérifier et orienter l'action des dirigeants pour éviter les conflits d'intérêts."
+            }
+        ];
+
+        // Navigation
+        function showMainMenu() {
+            document.querySelectorAll('.content-area').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('main-menu').style.display = 'grid';
+        }
+
+        function showSection(sectionName) {
+            document.getElementById('main-menu').style.display = 'none';
+            document.querySelectorAll('.content-area').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionName + '-section').classList.add('active');
+            
+            if (sectionName === 'quiz') {
+                initQuiz();
+            } else if (sectionName === 'flashcards') {
+                initFlashcards();
+            }
+        }
+
+        // Quiz functions
+        function initQuiz() {
+            currentQuizQuestion = 0;
+            quizScore = 0;
+            quizAnswers = [];
+            updateQuizProgress();
+            showQuizQuestion();
+        }
+
+        function showQuizQuestion() {
+            if (currentQuizQuestion >= quizData.length) {
+                showQuizResults();
+                return;
+            }
+
+            const question = quizData[currentQuizQuestion];
+            const container = document.getElementById('quiz-container');
+            
+            container.innerHTML = `
+                <div class="quiz-question">
+                    <div class="question-text">Question ${currentQuizQuestion + 1}/${quizData.length}: ${question.question}</div>
+                    <div class="options">
+                        ${question.options.map((option, index) => 
+                            `<div class="option" onclick="selectQuizOption(${index})">${option}</div>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('quiz-controls').innerHTML = '';
+            updateQuizProgress();
+        }
+
+        function selectQuizOption(selectedIndex) {
+            const question = quizData[currentQuizQuestion];
+            const options = document.querySelectorAll('.option');
+            
+            options.forEach((option, index) => {
+                option.classList.remove('selected');
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === selectedIndex && index !== question.correct) {
+                    option.classList.add('incorrect');
+                }
+                option.onclick = null;
+            });
+
+            quizAnswers[currentQuizQuestion] = selectedIndex;
+            if (selectedIndex === question.correct) {
+                quizScore++;
+            }
+
+            setTimeout(() => {
+                currentQuizQuestion++;
+                showQuizQuestion();
+            }, 2000);
+        }
+
+        function updateQuizProgress() {
+            const progress = (currentQuizQuestion / quizData.length) * 100;
+            document.getElementById('quiz-progress').style.width = progress + '%';
+            document.getElementById('quiz-score').textContent = `Score: ${quizScore}/${currentQuizQuestion}`;
+        }
+
+        function showQuizResults() {
+            const percentage = Math.round((quizScore / quizData.length) * 100);
+            let message = '';
+            
+            if (percentage >= 80) {
+                message = '🎉 Excellent ! Vous maîtrisez parfaitement les notions !';
+            } else if (percentage >= 60) {
+                message = '👍 Bien joué ! Quelques révisions et ce sera parfait !';
+            } else {
+                message = '📚 Il faut réviser encore un peu. Courage !';
+            }
+
+            document.getElementById('quiz-container').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <h3>Résultats du Quiz</h3>
+                    <div class="score" style="font-size: 2em; margin: 20px 0;">
+                        ${quizScore}/${quizData.length} (${percentage}%)
+                    </div>
+                    <p style="font-size: 1.2em; margin-bottom: 30px;">${message}</p>
+                    <button class="btn" onclick="initQuiz()">Recommencer</button>
+                </div>
+            `;
+
+            document.getElementById('quiz-controls').innerHTML = '';
+            updateQuizProgress();
+        }
+
+        // Flashcards functions
+        function initFlashcards() {
+            currentFlashcard = 0;
+            isFlipped = false;
+            showFlashcard();
+        }
+
+        function showFlashcard() {
+            const card = flashcardsData[currentFlashcard];
+            const container = document.getElementById('flashcard-container');
+            
+            container.innerHTML = `
+                <div class="flashcard-front active">
+                    <h3>Question</h3>
+                    <p style="font-size: 1.5em; margin-top: 20px;">${card.front}</p>
+                    <p style="margin-top: 40px; color: #666;">Cliquez sur "Retourner la carte" pour voir la réponse</p>
+                </div>
+                <div class="flashcard-back">
+                    <h3>Réponse</h3>
+                    <p style="font-size: 1.2em; margin-top: 20px; line-height: 1.6;">${card.back}</p>
+                </div>
+            `;
+
+            document.getElementById('flashcard-counter').textContent = 
+                `Carte ${currentFlashcard + 1} sur ${flashcardsData.length}`;
+            
+            isFlipped = false;
+        }
+
+        function flipCard() {
+            const front = document.querySelector('.flashcard-front');
+            const back = document.querySelector('.flashcard-back');
+            
+            if (!isFlipped) {
+                front.classList.remove('active');
+                back.classList.add('active');
+                isFlipped = true;
+            } else {
+                back.classList.remove('active');
+                front.classList.add('active');
+                isFlipped = false;
+            }
+        }
+
+        function nextCard() {
+            if (currentFlashcard < flashcardsData.length - 1) {
+                currentFlashcard++;
+                showFlashcard();
+            }
+        }
+
+        function previousCard() {
+            if (currentFlashcard > 0) {
+                currentFlashcard--;
+                showFlashcard();
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            showMainMenu();
+        });
+    </script>
+</body>
+</html>
